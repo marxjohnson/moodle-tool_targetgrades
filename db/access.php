@@ -16,19 +16,19 @@
 
 
 /**
- * Defines capabilities for the targetgrades report
+ * Defines capabilities for the targetgrades tool
  *
- * @package		report
+ * @package		tool
  * @subpackage	targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
-  
+ */
+
 
 $capabilities = array(
 
-    'report/targetgrades:view' => array(
+    'tool/targetgrades:view' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
@@ -37,7 +37,7 @@ $capabilities = array(
         )
     ),
 
-    'report/targetgrades:distribute' => array(
+    'tool/targetgrades:distribute' => array(
 
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,

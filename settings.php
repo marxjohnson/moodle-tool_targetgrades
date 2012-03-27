@@ -16,16 +16,16 @@
 
 
 /**
- * Defines the plugin as an admin report and adds a link in the Settings block
+ * Defines the plugin as an admin tool and adds a link in the Settings block
  *
- * @package report
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
- 
-$url = new moodle_url('/'.$CFG->admin.'/report/targetgrades');
-$ADMIN->add('grades', new admin_externalpage('reporttargetgrades', get_string('pluginname', 'report_targetgrades'), $url->out(),'report/targetgrades:view'));
+ */
+
+$url = new moodle_url('/'.$CFG->admin.'/tool/targetgrades');
+$ADMIN->add('grades', new admin_externalpage('tooltargetgrades', get_string('pluginname', 'tool_targetgrades'), $url->out(),'tool/targetgrades:view'));
 
 ?>

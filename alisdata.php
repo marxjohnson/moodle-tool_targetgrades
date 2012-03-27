@@ -22,8 +22,8 @@
  * alis_pdf2csv.sh) to be uploaded. Once uploaded, a list of statistics is
  * displayed, allowing patterns to be defined for each set of statistics to be
  * applied to when grades are distributed.
- * 
- * @package report
+ *
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
@@ -31,41 +31,40 @@
  */
 
 require_once('../../../config.php');
-require_once($CFG->dirroot.'/'.$CFG->admin.'/report/targetgrades/alisdata_form.php');
-require_once($CFG->dirroot.'/'.$CFG->admin.'/report/targetgrades/lib.php');
+require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/targetgrades/alisdata_form.php');
+require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/targetgrades/lib.php');
 require_once($CFG->libdir.'/adminlib.php');
 
-use report\targetgrades as tg;
+use tool\targetgrades as tg;
 
 require_login($SITE);
-admin_externalpage_setup('reporttargetgrades', null, null, '/'.$CFG->admin.'/report/targetgrades/alisdata.php');
-$PAGE->navbar->add(get_string('alisdata', 'report_targetgrades'));
+admin_externalpage_setup('tooltargetgrades', null, null, '/'.$CFG->admin.'/tool/targetgrades/alisdata.php');
+$PAGE->navbar->add(get_string('alisdata', 'tool_targetgrades'));
 
-$renderer = $PAGE->get_renderer('report_targetgrades');
+$renderer = $PAGE->get_renderer('tool_targetgrades');
 
 $savepatterns = optional_param('savepatterns', false, PARAM_BOOL);
 $alispatterns = optional_param('alispatterns', array(), PARAM_CLEAN);
 $addpattern = optional_param('addpattern', array(), PARAM_CLEAN);
-$config = tg\get_config('report_targetgrades');
+$config = tg\get_config('tool_targetgrades');
 $addfield = optional_param('addfield', null, PARAM_INT);
-
 ### @export 'pattern_process'
 if ($savepatterns || !empty($addpattern)) {
-    foreach($alispatterns as $alisid => $patterns) {
-        foreach($patterns as $id => $pattern) {
-            if ($alisdata = $DB->get_record('report_targetgrades_alisdata', array('id' => $alisid))) {
-                if($patternrecord = $DB->get_record('report_targetgrades_patterns', array('id' => $id))) {
-                    if(empty($pattern)) {
-                        $DB->delete_records('report_targetgrades_patterns', array('id' => $id));
+    foreach ($alispatterns as $alisid => $patterns) {
+        foreach ($patterns as $id => $pattern) {
+            if ($alisdata = $DB->get_record('tool_targetgrades_alisdata', array('id' => $alisid))) {
+                if ($patternrecord = $DB->get_record('tool_targetgrades_patterns', array('id' => $id))) {
+                    if (empty($pattern)) {
+                        $DB->delete_records('tool_targetgrades_patterns', array('id' => $id));
                     } else {
                         $patternrecord->pattern = $pattern;
-                        $DB->update_record('report_targetgrades_patterns', $patternrecord);
+                        $DB->update_record('tool_targetgrades_patterns', $patternrecord);
                     }
                 } else if (!empty($pattern)) {
                     $patternrecord = new stdClass;
                     $patternrecord->alisdataid = $alisid;
                     $patternrecord->pattern = $pattern;
-                    $patternrecord->id = $DB->insert_record('report_targetgrades_patterns', $patternrecord);
+                    $patternrecord->id = $DB->insert_record('tool_targetgrades_patterns', $patternrecord);
                 }
             }
         }
@@ -73,7 +72,7 @@ if ($savepatterns || !empty($addpattern)) {
     $output = '<p>'.get_string('changessaved').'</p>';
     if (!empty($addpattern)) {
         $params = array('addfield' => key($addpattern));
-        redirect(new moodle_url('/admin/report/targetgrades/alisdata.php#alis'.key($addpattern), $params), '', 0);
+        redirect(new moodle_url('/admin/tool/targetgrades/alisdata.php#alis'.key($addpattern), $params), '', 0);
     }
 }
 
@@ -86,14 +85,14 @@ if ($uploaddata) {
     $handler->validate();
     $import = $handler->process();
 
-    $output = '<p>'.get_string('importoutput', 'report_targetgrades', $import).'</p>';
+    $output = '<p>'.get_string('importoutput', 'tool_targetgrades', $import).'</p>';
 
 }
 
 ### @export 'table'
 $select = 'SELECT a.*, a.name AS subject, q.name AS qualification ';
-$from = 'FROM {report_targetgrades_alisdata} a
-    JOIN {report_targetgrades_qualtype} q ON a.qualtypeid = q.id ';
+$from = 'FROM {tool_targetgrades_alisdata} a
+    JOIN {tool_targetgrades_qualtype} q ON a.qualtypeid = q.id ';
 $order = 'ORDER BY q.name, a.name ASC';
 
 if($alis_data = $DB->get_records_sql($select.$from.$order)) {

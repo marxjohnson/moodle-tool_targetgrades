@@ -16,15 +16,15 @@
 
 
 /**
- * Defines english strings for the targetgrades report
+ * Defines english strings for the targetgrades tool
  *
- * @package report
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
- 
+ */
+
 $string['alisdata'] = 'Upload ALIS data';
 $string['calculategrades'] = 'Calculate Target Grades';
 $string['calculategrades_help'] = 'Clicking this button will add 4 grade items to each of the courses selected from the list on the right - Average GCSE Points, ALIS Points, Minimum Grade and Target Grade.
@@ -41,7 +41,7 @@ $string['col_gradient'] = 'Gradient';
 $string['col_intercept'] = 'Intercept';
 $string['col_qualtype'] = 'Qualification';
 $string['col_quality'] = 'Quality';
-$string['col_quality_help'] = 'This column indicates the quality of the statistics.  This should be used when considering whether Target Grades should be calculated for each subject, since low quality statistics may not produce meaningful Target Grades. 
+$string['col_quality_help'] = 'This column indicates the quality of the statistics.  This should be used when considering whether Target Grades should be calculated for each subject, since low quality statistics may not produce meaningful Target Grades.
 
 An S indicates a below average sample size. This means that the statistics were calculated from a small number of actual grades.  Without knowing how many students took each subject, it\'s hard to determine confidence from sample size, so this indicator should be considered in the context of other indicators that may be present.
 
@@ -52,19 +52,19 @@ A D indicates a high standard deviation.  This means that, while the trend of ac
 Each of these indicators should be considered in context when deciding which subjects to calculate target grades for. For example, a below average sample size doesn\'t mean statistics should be automatically disregarded. However, where there is a combination of quality issues such as a very high standard deviation and a low correlation, it\'s unlikely that grades calculated from the statistics would have any meaning.';
 $string['configtitle'] = 'Configure Target Grades Report';
 $string['configalis'] = 'ALIS (Advanced Level Information System) data is used to calculate minimum target grades for students based on their average GCSE score and past statistics for the relevant course.<br />
-                        Latest data can be downloaded <a href="https://css.cemcentre.org/ALIS/Site/reports/default.aspx?reptype=6">here</a> in PDF format. This must be converted to CSV format using the script included with this report before uploading.';
+                        Latest data can be downloaded <a href="https://css.cemcentre.org/ALIS/Site/reports/default.aspx?reptype=6">here</a> in PDF format. This must be converted to CSV format using the script included with this tool before uploading.';
 $string['configgradient'] = 'Gradient';
 $string['configintercept'] = 'Intercept';
 $string['courseswithgrades'] = 'Courses with Target Grade items';
 $string['courseswithoutgrades'] = 'Courses without Target Grade items';
 $string['createdgis'] = 'Grade items created';
 $string['equationsfile'] = 'ALIS Equations file';
-$string['equationsfiledesc'] = 'This MUST be a CSV file produced using alis_pdf2csv.sh, included with this report';
+$string['equationsfiledesc'] = 'This MUST be a CSV file produced using alis_pdf2csv.sh, included with this tool';
 $string['exclude_field'] = 'Exclude courses where:';
 $string['exclude_regex'] = 'matches pattern:';
 $string['exclude_regexdesc'] = 'Exclude Regex';
 $string['exclude_regexdesc_help'] = 'Must be a valid Regular Expression. Any courses matching this pattern will be excluded, and will NOT be available for distribution.<br />Use this to make the distribution list more manageable.';
-$string['explainpatterns'] = 'A list of patterns has been generated based on the crietria defined in the report\'s settings, and the courses currently on the system. Selecting a pattern for a row in the table will apply those statistics to courses matching that pattern. Currently the pattern matches the first {$a->group_length} characters of {$a->group_field}';
+$string['explainpatterns'] = 'A list of patterns has been generated based on the crietria defined in the tool\'s settings, and the courses currently on the system. Selecting a pattern for a row in the table will apply those statistics to courses matching that pattern. Currently the pattern matches the first {$a->group_length} characters of {$a->group_field}';
 $string['defaultscale'] = 'Default grade scale';
 $string['defaultscale_help'] = 'This scale will be applied to grade items in all courses with no configured ALIS Data. They can be changed after distribution in each course\'s gradebook';
 $string['distribute_success'] = 'Grade items distributed to {$a} courses successfully';
@@ -73,7 +73,7 @@ $string['distribute_unconfigured'] = '{$a} courses were ignored, becuase they ha
 $string['distribute_noavgcse'] = '{$a} students were ignored, because they have no Average GCSE score';
 $string['distribute_failedcalc'] = '{$a} grade calculations failed.';
 $string['err_gcsefield'] = 'You must select a field';
-$string['err_nouserfields'] = 'This report needs a User Profile Field to be defined to hold students\' Average GCSE points score. Please define one before attempting to configure the report'; 
+$string['err_nouserfields'] = 'This tool needs a User Profile Field to be defined to hold students\' Average GCSE points score. Please define one before attempting to configure the tool';
 $string['err_group_length'] = 'If you define a group field you must define a group length';
 $string['err_group_field'] = 'If you define a group length you must define a group field';
 $string['err_exclude_field'] = 'If you define an exclude pattern you must define a field to check';
@@ -95,9 +95,9 @@ $string['lowsize'] = 'The sample size for this subject ({$a}) is less than half 
 $string['lowcorrelation'] = 'The correlation of actual results to these statistics is low ({$a}). Target Grades calculated using these statistics may not be reliable.';
 $string['mtgs'] = 'Minimum Target Grades';
 $string['mtgdistribute'] = 'Distribute Target Grades';
-$string['needsconfig'] = 'This report is not configured. You must select at least a gcse_field, roles and categories on the report\'s settings page.';
+$string['needsconfig'] = 'This tool is not configured. You must select at least a gcse_field, roles and categories on the tool\'s settings page.';
 $string['needsalis'] = 'You must at least import ALIS data before you can distrbute grades.';
-$string['noconfig'] = 'Some ALIS data is missing - please configure the report';
+$string['noconfig'] = 'Some ALIS data is missing - please configure the tool';
 $string['noalis'] = '*No ALIS Data - grade items will be created, but no MTG calculated.';
 $string['nostuds'] = 'No Students - ignored';
 $string['nogrades'] = 'missing data - MTG not calculated';
@@ -108,14 +108,14 @@ $string['okquality'] = 'These statistics are of sufficient quality to calculate 
 $string['oksize'] = 'The sample size for this subject ({$a}) is below average. However, these stats should still be OK for calulating Target Grades.';
 $string['pluginname'] = 'Target Grades';
 $string['settingssaved'] = 'Settings Saved';
-$string['unsaferegex'] = 'The exclusion pattern you entered in the report\'s settings is unsafe and may overload the server. Matching it will not be attempted until you have edited it. Please see http://www.regular-expressions.info/catastrophic.html for more details.';
+$string['unsaferegex'] = 'The exclusion pattern you entered in the tool\'s settings is unsafe and may overload the server. Matching it will not be attempted until you have edited it. Please see http://www.regular-expressions.info/catastrophic.html for more details.';
 $string['uploadalis'] = 'Upload ALIS data';
 $string['recalculate'] = 'Recalculate existing grades';
-$string['recalculate_help'] = 'Clicking this button will recalulate ALIS points and Minimum Grades for all courses on the left hand list (those that already have the grade items). 
+$string['recalculate_help'] = 'Clicking this button will recalulate ALIS points and Minimum Grades for all courses on the left hand list (those that already have the grade items).
 
 For example, if you\'ve changed the statistics associated with a pattern, this will replace the grades with those calculated using the new statistics.';
 $string['roles'] = 'Use Roles';
-$string['roles_help'] = 'The report will attempt to distribute to users with these roles on each selected course.';
+$string['roles_help'] = 'The tool will attempt to distribute to users with these roles on each selected course.';
 $string['saveandadd'] = 'Save changes and Add another pattern';
 $string['searchresults'] = 'Search Results';
 $string['settingssaved'] = 'Settings Saved';

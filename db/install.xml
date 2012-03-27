@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/mtgdistribute/db" VERSION="20110531" COMMENT="XMLDB file for Moodle blocks/mtgdistribute"
+<XMLDB PATH="blocks/mtgdistribute/db" VERSION="20120326" COMMENT="XMLDB file for Moodle blocks/mtgdistribute"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="report_targetgrades_alisdata" COMMENT="Table to store ALIS data" NEXT="report_targetgrades_qualtype">
+    <TABLE NAME="tool_targetgrades_alisdata" COMMENT="Table to store ALIS data" NEXT="tool_targetgrades_qualtype">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
         <FIELD NAME="name" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" COMMENT="The name of the course used by ALIS" PREVIOUS="id" NEXT="qualtypeid"/>
@@ -22,7 +22,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="report_targetgrades_qualtype" COMMENT="Types of qualifications and the names used by ALIS for them" PREVIOUS="report_targetgrades_alisdata" NEXT="report_targetgrades_patterns">
+    <TABLE NAME="tool_targetgrades_qualtype" COMMENT="Types of qualifications and the names used by ALIS for them" PREVIOUS="tool_targetgrades_alisdata" NEXT="tool_targetgrades_patterns">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="name"/>
         <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="The name used by ALIS for the type of qualification" PREVIOUS="id" NEXT="scaleid"/>
@@ -32,7 +32,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="report_targetgrades_patterns" COMMENT="Stores patterns by which to match courses that will have MTGs calculated. Each record holds a pattern linked to a set of ALIS statistics. All courses matching that pattern will use those ALIS statistics for MTG calculations." PREVIOUS="report_targetgrades_qualtype">
+    <TABLE NAME="tool_targetgrades_patterns" COMMENT="Stores patterns by which to match courses that will have MTGs calculated. Each record holds a pattern linked to a set of ALIS statistics. All courses matching that pattern will use those ALIS statistics for MTG calculations." PREVIOUS="tool_targetgrades_qualtype">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="alisdataid"/>
         <FIELD NAME="alisdataid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="The ID of the ALIS data set to use for this pattern" PREVIOUS="id" NEXT="pattern"/>

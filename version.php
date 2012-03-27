@@ -1,4 +1,4 @@
-<?php 
+<?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -18,13 +18,14 @@
 /**
  * Sets the plugin's version
  *
- * @package report
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
- 
+ */
+
 $plugin->version = 2011052500;
+$plugin->component = 'tool_targetgrades';
 
 ?>

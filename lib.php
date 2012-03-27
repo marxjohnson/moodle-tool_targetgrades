@@ -18,7 +18,7 @@
 /**
  * Library of functions, classes and constants for Target Grade distribution
  *
- * @package report
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
@@ -26,7 +26,7 @@
  */
 
 ### @export "namespace"
-namespace report\targetgrades;
+namespace tool\targetgrades;
 ### @end
 /**
  * These constants store the strings used by ALIS to describe each type of
@@ -167,7 +167,7 @@ function get_scale($qualtype) {
 function get_config($force = false) {
     static $config;
     if (empty($config) || $force) {
-        $config = \get_config('report_targetgrades');
+        $config = \get_config('tool_targetgrades');
         $config->categories = isset($config->categories) ? unserialize($config->categories) : array();
         $config->roles = isset($config->roles) ? unserialize($config->roles) : array();
     }
@@ -187,8 +187,8 @@ function hasconfig($options){
      array_walk($options, function ($option){ // Mark all courses that don't have any ALIS data
         global $DB;
         $select = 'SELECT * ';
-        $from = 'FROM {report_targetgrades_patterns} p
-            JOIN {report_targetgrades_alisdata} d ON p.alisdataid = d.id ';
+        $from = 'FROM {tool_targetgrades_patterns} p
+            JOIN {tool_targetgrades_alisdata} d ON p.alisdataid = d.id ';
         $where = 'WHERE p.pattern = ?';
         $params = array($option->pattern);
         if($DB->get_record_sql($select.$from.$where, $params)) {
@@ -214,8 +214,8 @@ function hasconfig($options){
 function calculate_mtg($student, $course){
     global $DB;
     $select = 'SELECT name, gradient, intercept ';
-    $from = 'FROM {report_targetgrades_patterns} AS p
-        JOIN {report_targetgrades_alisdata} AS d ON p.alisdataid = d.id ';
+    $from = 'FROM {tool_targetgrades_patterns} AS p
+        JOIN {tool_targetgrades_alisdata} AS d ON p.alisdataid = d.id ';
     $where = 'WHERE p.pattern = ?';
     $params = array($course->pattern);
 
@@ -374,7 +374,7 @@ function build_pattern_options() {
     }
 
     $where .= 'AND LEFT('.$config->group_field.', '.$config->group_length.') NOT IN
-                (SELECT pattern FROM {report_targetgrades_patterns} tp) ';
+                (SELECT pattern FROM {tool_targetgrades_patterns} tp) ';
 
     $options = $DB->get_records_sql_menu($select.$from.$where.$order, $params);
 
@@ -452,17 +452,17 @@ function print_tabs($selected) {
 
     $tabs = array();
     $tabs[] = new \tabobject(1,
-            new \moodle_url('/admin/report/targetgrades/alisdata.php'),
-            \get_string('alisdata', 'report_targetgrades'));
-    if($DB->get_records('report_targetgrades_alisdata')) {
+        new \moodle_url('/'.$CFG->admin.'/tool/targetgrades/alisdata.php'),
+            \get_string('alisdata', 'tool_targetgrades'));
+    if($DB->get_records('tool_targetgrades_alisdata')) {
         $tabs[] = new \tabobject(2,
-                new \moodle_url('/admin/report/targetgrades/distribute.php'),
-                \get_string('mtgdistribute', 'report_targetgrades'));
+            new \moodle_url('/'.$CFG->admin.'/tool/targetgrades/distribute.php'),
+                            \get_string('mtgdistribute', 'tool_targetgrades'));
     }
     $tabs[] = new \tabobject(3,
-            new \moodle_url('/'.$CFG->admin.'/report/targetgrades/settingsform.php'),
-            \get_string('settings'));
-    echo $OUTPUT->heading(get_string('mtgdistribute', 'report_targetgrades'));
+            new \moodle_url('/'.$CFG->admin.'/tool/targetgrades/settingsform.php'),
+                            \get_string('settings'));
+    echo $OUTPUT->heading(get_string('mtgdistribute', 'tool_targetgrades'));
     \print_tabs(array($tabs), $selected);
 }
 ### @end
@@ -543,7 +543,7 @@ class item_avgcse extends item_grade {
      */
     public function __construct($courseid, $categoryid) {
         parent::__construct($courseid, $categoryid);
-        $this->itemname = \get_string('item_avgcse', 'report_targetgrades');
+        $this->itemname = \get_string('item_avgcse', 'tool_targetgrades');
         $this->gradetype = GRADE_TYPE_VALUE;
         $this->grademax = 10;
         $this->grademin = 0;
@@ -570,7 +570,7 @@ class item_alisnum extends item_grade {
      */
     public function __construct($courseid, $categoryid) {
         parent::__construct($courseid, $categoryid);
-        $this->itemname = \get_string('item_alisnum', 'report_targetgrades');
+        $this->itemname = \get_string('item_alisnum', 'tool_targetgrades');
         $this->gradetype = GRADE_TYPE_VALUE;
         $this->grademax = 360;
         $this->grademin = 0;
@@ -598,7 +598,7 @@ class item_min extends item_grade {
      */
     public function __construct($courseid, $categoryid) {
         parent::__construct($courseid, $categoryid);
-        $this->itemname = \get_string('item_alis', 'report_targetgrades');
+        $this->itemname = \get_string('item_alis', 'tool_targetgrades');
         $this->hidden = 1;
         $this->locked = \time();
         $this->gradetype = GRADE_TYPE_SCALE;
@@ -643,7 +643,7 @@ class item_target extends item_min {
      */
     public function __construct($courseid, $categoryid) {
         parent::__construct($courseid, $categoryid);
-        $this->itemname = \get_string('item_mtg', 'report_targetgrades');
+        $this->itemname = \get_string('item_mtg', 'tool_targetgrades');
         $this->hidden = 0;
         $this->locked = 0;
         $this->idnumber = GRADE_ITEM_PREFIX.'target';
@@ -664,7 +664,7 @@ class item_cpg extends item_min {
      */
     public function __construct($courseid, $categoryid) {
         parent::__construct($courseid, $categoryid);
-        $this->itemname = \get_string('item_cpg', 'report_targetgrades');
+        $this->itemname = \get_string('item_cpg', 'tool_targetgrades');
         $this->hidden = 0;
         $this->locked = 0;
         $this->idnumber = GRADE_ITEM_PREFIX.'cpg';
@@ -713,11 +713,11 @@ class csvhandler {
         $fs = \get_file_storage();
         $context = \get_context_instance(CONTEXT_USER, $USER->id);
         if (!$files = $fs->get_area_files($context->id, 'user', 'draft', $this->filename, 'id DESC', false)) {
-            throw new \moodle_exception('cantreadcsv', 'report_targetgrades');
+            throw new \moodle_exception('cantreadcsv', 'tool_targetgrades');
         }
         $file = \reset($files);
         if (!$file = $file->get_content_file_handle()) {
-            throw new \moodle_exception('cantreadcsv', 'report_targetgrades');
+            throw new \moodle_exception('cantreadcsv', 'tool_targetgrades');
         }
 
         return $file;
@@ -741,7 +741,7 @@ class csvhandler {
         while ($csvrow = \fgetcsv($file, 0, '|')) {
             $line++;
             if (count($csvrow) != 1 && count($csvrow) != 6) {
-                throw new \moodle_exception('wrongcolcsv', 'report_targetgrades', '', $line);
+                throw new \moodle_exception('wrongcolcsv', 'tool_targetgrades', '', $line);
             }
         }
         \fclose($file);
@@ -780,7 +780,7 @@ class csvhandler {
                 // Create a new qualtype record if there isn't one already.
                 $where = $DB->sql_compare_text('name').' = ?';
                 $params = array($qualname);
-                if(!$qualtype = $DB->get_record_select('report_targetgrades_qualtype', $where, $params)) {
+                if(!$qualtype = $DB->get_record_select('tool_targetgrades_qualtype', $where, $params)) {
                     if(!$qualscale = $DB->get_record('scale', array('name' => $qualname.' MTG'))) {
 
                         if($scale = get_scale($qualname)) {
@@ -797,7 +797,7 @@ class csvhandler {
                         $qualtype = new \stdClass;
                         $qualtype->name = $qualname;
                         $qualtype->scaleid = $qualscale->id;
-                        $qualtype->id = $DB->insert_record('report_targetgrades_qualtype', $qualtype);
+                        $qualtype->id = $DB->insert_record('tool_targetgrades_qualtype', $qualtype);
                         $import->qualcount++;
                     }
                 }
@@ -813,13 +813,13 @@ class csvhandler {
                     $standarddeviation = \clean_param($line[5], \PARAM_FLOAT);
                     $where = $DB->sql_compare_text('name').' = ? AND qualtypeid = ?';
                     $params = array($name, $qualtype->id);
-                    if($subject = $DB->get_record_select('report_targetgrades_alisdata', $where, $params)) {
+                    if($subject = $DB->get_record_select('tool_targetgrades_alisdata', $where, $params)) {
                         $subject->samplesize = $samplesize;
                         $subject->gradient = $gradient;
                         $subject->intercept = $intercept;
                         $subject->correlation = $correlation;
                         $subject->standarddeviation = $standarddeviation;
-                        $DB->update_record('report_targetgrades_alisdata', $subject);
+                        $DB->update_record('tool_targetgrades_alisdata', $subject);
                         $import->updatecount++;
                     } else {
                         $subject = new \stdClass;
@@ -830,7 +830,7 @@ class csvhandler {
                         $subject->correlation = $correlation;
                         $subject->standarddeviation = $standarddeviation;
                         $subject->qualtypeid = $qualtype->id;
-                        $DB->insert_record('report_targetgrades_alisdata', $subject);
+                        $DB->insert_record('tool_targetgrades_alisdata', $subject);
                         $import->subjectcount++;
                     }
                 }
@@ -841,10 +841,10 @@ class csvhandler {
 
         // All the stats are now in the DB, so do a pass over the table to flag up any quality issues with the data
         ### @export "csvhandler_process_quality"
-        $averagesize = round($DB->get_record_sql('SELECT AVG(samplesize) as avg FROM {report_targetgrades_alisdata}')->avg);
+        $averagesize = round($DB->get_record_sql('SELECT AVG(samplesize) as avg FROM {tool_targetgrades_alisdata}')->avg);
         $select = 'SELECT ta.*, tq.name as qualification ';
-        $from = 'FROM {report_targetgrades_alisdata} ta
-            JOIN {report_targetgrades_qualtype} tq ON ta.qualtypeid = tq.id';
+        $from = 'FROM {tool_targetgrades_alisdata} ta
+            JOIN {tool_targetgrades_qualtype} tq ON ta.qualtypeid = tq.id';
         $alisdata = $DB->get_records_sql($select.$from);
 
         foreach ($alisdata as $alis) {
@@ -913,7 +913,7 @@ class csvhandler {
             }
 
             ### @export "csvhandler_process_end"
-            $DB->update_record('report_targetgrades_alisdata', $alis);
+            $DB->update_record('tool_targetgrades_alisdata', $alis);
         }
 
         return $import;
@@ -941,8 +941,9 @@ if (class_exists('\user_selector_base')) {
          */
         ### @export "pcs_get_options"
         protected function get_options() {
+            global $CFG;
             $options = parent::get_options();
-            $options['file'] = 'admin/report/targetgrades/lib.php';
+            $options['file'] = $CFG->admin.'/tool/targetgrades/lib.php';
             return $options;
         }
         ### @end
@@ -972,16 +973,16 @@ if (class_exists('\user_selector_base')) {
                 $args = array($config->group_field, $config->group_length);
                 $select .= \vsprintf('LEFT(c.%1$s, %2$d) AS pattern ', $args);
                 $from = \vsprintf('FROM {course} c
-                            LEFT JOIN {report_targetgrades_patterns} p
+                            LEFT JOIN {tool_targetgrades_patterns} p
                                 ON LEFT(c.%1$s, %2$d) = CAST(p.pattern AS CHAR)
-                            LEFT JOIN {report_targetgrades_alisdata} d ON p.alisdataid = d.id
-                            LEFT JOIN {report_targetgrades_qualtype} q ON d.qualtypeid = q.id ', $args);
+                            LEFT JOIN {tool_targetgrades_alisdata} d ON p.alisdataid = d.id
+                            LEFT JOIN {tool_targetgrades_qualtype} q ON d.qualtypeid = q.id ', $args);
             } else {
                 $select .= 'shortname AS pattern ';
                 $from = 'FROM {course} c
-                            LEFT JOIN {report_targetgrades_patterns} p ON c.shortname = p.pattern
-                            LEFT JOIN {report_targetgrades_alisdata} d ON p.alisdataid = d.id
-                            LEFT JOIN {report_targetgrades_qualtype} q ON d.qualtypeid = q.id ';
+                            LEFT JOIN {tool_targetgrades_patterns} p ON c.shortname = p.pattern
+                            LEFT JOIN {tool_targetgrades_alisdata} d ON p.alisdataid = d.id
+                            LEFT JOIN {tool_targetgrades_qualtype} q ON d.qualtypeid = q.id ';
             }
 
             $order = 'ORDER BY pattern';
@@ -1003,14 +1004,14 @@ if (class_exists('\user_selector_base')) {
             }
 
             ### @export "pcs_find_users_search"
-            $optgroupname = get_string('courseswithoutgrades', 'report_targetgrades');
+            $optgroupname = get_string('courseswithoutgrades', 'tool_targetgrades');
 
             if (!empty($search)) {
                 $shortnamelike = $DB->sql_like('shortname', '?');
                 $fullnamelike = $DB->sql_like('fullname', '?');
                 $where .= 'AND ('.$shortnamelike.' OR '.$fullnamelike.') ';
                 $params = array_merge($params, array('%'.$search.'%', '%'.$search.'%'));
-                $optgroupname .= ' - '.get_string('searchresults', 'report_targetgrades');
+                $optgroupname .= ' - '.get_string('searchresults', 'tool_targetgrades');
             }
 
             ### @export "pcs_find_users_exclude"
@@ -1066,15 +1067,15 @@ if (class_exists('\user_selector_base')) {
             if(!empty($config->group_field) && !empty($config->group_length)) {
                 $args = array($config->group_field, $config->group_length);
                 $select .= \vsprintf('LEFT(c.%1$s, %2$d) AS pattern ', $args);
-                $from .= \vsprintf('LEFT JOIN {report_targetgrades_patterns} p
+                $from .= \vsprintf('LEFT JOIN {tool_targetgrades_patterns} p
                                         ON LEFT(c.%1$s, %2$d) = CAST(p.pattern AS CHAR)
-                                    LEFT JOIN {report_targetgrades_alisdata} d ON p.alisdataid = d.id
-                                    LEFT JOIN {report_targetgrades_qualtype} q ON d.qualtypeid = q.id ', $args);
+                                    LEFT JOIN {tool_targetgrades_alisdata} d ON p.alisdataid = d.id
+                                    LEFT JOIN {tool_targetgrades_qualtype} q ON d.qualtypeid = q.id ', $args);
             } else {
                 $select .= 'shortname AS pattern ';
-                $from .= 'LEFT JOIN {report_targetgrades_patterns} p ON c.shortname = p.pattern
-                            LEFT JOIN {report_targetgrades_alisdata} d ON p.alisdataid = d.id
-                            LEFT JOIN {report_targetgrades_qualtype} q ON d.qualtypeid = q.id ';
+                $from .= 'LEFT JOIN {tool_targetgrades_patterns} p ON c.shortname = p.pattern
+                            LEFT JOIN {tool_targetgrades_alisdata} d ON p.alisdataid = d.id
+                            LEFT JOIN {tool_targetgrades_qualtype} q ON d.qualtypeid = q.id ';
             }
 
             ### @export "dcs_find_users_regex"
@@ -1095,10 +1096,10 @@ if (class_exists('\user_selector_base')) {
             }
 
             ### @export "dcs_find_users_items"
-            $itemnames = array(get_string('item_avgcse', 'report_targetgrades'),
-            get_string('item_alisnum', 'report_targetgrades'),
-            get_string('item_alis', 'report_targetgrades'),
-            get_string('item_mtg', 'report_targetgrades'));
+            $itemnames = array(get_string('item_avgcse', 'tool_targetgrades'),
+            get_string('item_alisnum', 'tool_targetgrades'),
+            get_string('item_alis', 'tool_targetgrades'),
+            get_string('item_mtg', 'tool_targetgrades'));
             list($itemsql, $itemparams) = $DB->get_in_or_equal($itemnames);
 
             $where .= 'AND itemname '.$itemsql;
@@ -1107,7 +1108,7 @@ if (class_exists('\user_selector_base')) {
 
             ### @export "dcs_find_users_end"
             $options = hasconfig($options);
-            return array(get_string('courseswithgrades', 'report_targetgrades') => $options);
+            return array(get_string('courseswithgrades', 'tool_targetgrades') => $options);
         }
         ### @end
    };

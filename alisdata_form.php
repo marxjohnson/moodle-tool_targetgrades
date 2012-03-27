@@ -18,13 +18,13 @@
 /**
  * Defines the form for uploading ALIS data
  *
- * @package report
+ * @package tool
  * @subpackage targetgrades
  * @author      Mark Johnson <mark.johnson@tauntons.ac.uk>
  * @copyright   2011 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */ 
- 
+ */
+
 require_once($CFG->libdir.'/formslib.php');
 
 /**
@@ -34,13 +34,13 @@ require_once($CFG->libdir.'/formslib.php');
 class alisdata_upload_form extends moodleform {
 
     /**
-     * Define the form for uploading the ALIS data as a CSV file. 
+     * Define the form for uploading the ALIS data as a CSV file.
      */
     public function definition() {
         $mform    =& $this->_form;
         $mform->addElement('hidden', 'blah', 'blah');
-        $mform->addElement('filepicker', 'equationsfile', get_string('equationsfile', 'report_targetgrades'));
-        $mform->addElement('static', 'filedesc', '', get_string('equationsfiledesc', 'report_targetgrades'));
+        $mform->addElement('filepicker', 'equationsfile', get_string('equationsfile', 'tool_targetgrades'));
+        $mform->addElement('static', 'filedesc', '', get_string('equationsfiledesc', 'tool_targetgrades'));
         $mform->addElement('submit', 'upload', get_string('upload'));
     }
 }
