@@ -34,6 +34,7 @@ require_once('../../../config.php');
 require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/targetgrades/alisdata_form.php');
 require_once($CFG->dirroot.'/'.$CFG->admin.'/tool/targetgrades/lib.php');
 require_once($CFG->libdir.'/adminlib.php');
+require_once($CFG->libdir.'/tablelib.php');
 
 use tool\targetgrades as tg;
 
@@ -94,54 +95,77 @@ $select = 'SELECT a.*, a.name AS subject, q.name AS qualification ';
 $from = 'FROM {tool_targetgrades_alisdata} a
     JOIN {tool_targetgrades_qualtype} q ON a.qualtypeid = q.id ';
 $order = 'ORDER BY q.name, a.name ASC';
+$alis_data = $DB->get_recordset_sql($select.$from.$order);
 
-if($alis_data = $DB->get_records_sql($select.$from.$order)) {
+try {
+    $options = tg\build_pattern_options();
+} catch (unsafe_regex_exception $e) {
+    print_error($e->getMessage(), 'tool_targetgrades');
+}
 
-    $table = new html_table();
+### @export 'output'
+echo $OUTPUT->header();
+tg\print_tabs(1);
 
-    $helpicon = $OUTPUT->help_icon('col_quality', 'report_targetgrades');
-    $table->head = array(get_string('col_qualtype', 'report_targetgrades'),
-            get_string('col_name', 'report_targetgrades'),
-            get_string('col_pattern', 'report_targetgrades'),
-            get_string('col_gradient', 'report_targetgrades'),
-            get_string('col_intercept', 'report_targetgrades'),
-            get_string('col_quality', 'report_targetgrades').$helpicon);
+echo html_writer::tag('h2', get_string('alisdata', 'tool_targetgrades'));
+echo html_writer::tag('p', get_string('configalis', 'tool_targetgrades'));
+if (isset($output)) {
+    echo $output;
+}
+$uploadform->display();
+
+if ($alis_data->valid()) {
+
+    $table = new flexible_table('alisdata');
+
+    $table->define_columns(array('qualtype', 'name', 'pattern', 'gradient', 'intercept', 'quality'));
+    $helpicon = $OUTPUT->help_icon('col_quality', 'tool_targetgrades');
+    $table->define_headers(array(get_string('col_qualtype', 'tool_targetgrades'),
+        get_string('col_name', 'tool_targetgrades'),
+        get_string('col_pattern', 'tool_targetgrades'),
+        get_string('col_gradient', 'tool_targetgrades'),
+        get_string('col_intercept', 'tool_targetgrades'),
+        get_string('col_quality', 'tool_targetgrades').$helpicon));
+    $table->define_baseurl($PAGE->url);
+    $table->setup();
 
 ### @export 'table_patterns'
-    try {
-        $options = tg\build_pattern_options();
-    } catch (unsafe_regex_exception $e) {
-        print_error($e->getMessage(), 'report_targetgrades');
-    }
+
+    $PAGE->requires->js_init_call('M.tool_targetgrades.init_datalist');
+
+    echo html_writer::tag('p', get_string('explainpatterns', 'tool_targetgrades', $config));
+    echo html_writer::start_tag('form', array('action' => $PAGE->url->out(), 'method' => 'post'));
+
 
 ### @export 'table_loop'
-    foreach($alis_data as $alis) {
+    foreach ($alis_data as $alis) {
         $form = '';
 ### @export 'table_patternselector'
-        if($patterns = $DB->get_records('report_targetgrades_patterns', array('alisdataid' => $alis->id))) {
+        $patterns = $DB->get_recordset('tool_targetgrades_patterns', array('alisdataid' => $alis->id));
+        if ($patterns->valid()) {
             $break = 1;
             foreach ($patterns as $pattern) {
                 $optionswithpattern = array_merge($options, array($pattern->pattern => $pattern->pattern));
                 asort($optionswithpattern);
                 $selectname = 'alispatterns['.$alis->id.']['.$pattern->id.']';
                 $form .= $renderer->datalist($optionswithpattern, $selectname, $pattern->pattern);
-                if((count($patterns) > 1 && $break < count($patterns)) || $addfield == $alis->id) {
+                if ((count($patterns) > 1 && $break < count($patterns)) || $addfield == $alis->id) {
                     $form .= html_writer::empty_tag('br');
                 }
                 $break++;
             }
-
             if ($addfield == $alis->id) {
                 $form .= $renderer->datalist($options, 'alispatterns['.$alis->id.'][]');
             }
         } else {
             $form .= $renderer->datalist($options, 'alispatterns['.$alis->id.'][]');
         }
+        $patterns->close();
 
-        $attrs = array('type' => 'submit', 
-                        'value' => '+', 
-                        'name' => 'addpattern['.$alis->id.']', 
-                        'title' => get_string('saveandadd', 'report_targetgrades'));
+        $attrs = array('type' => 'submit',
+                        'value' => '+',
+                        'name' => 'addpattern['.$alis->id.']',
+                        'title' => get_string('saveandadd', 'tool_targetgrades'));
         $form .= html_writer::empty_tag('input', $attrs);
 
 ### @export 'table_quality'
@@ -165,10 +189,10 @@ if($alis_data = $DB->get_records_sql($select.$from.$order)) {
                 break;
         }
 
-        if($alis->quality_correlation) {
-                $quality[] = (object)array('field' => 'correlation', 
-                                            'message' => 'lowcorrelation', 
-                                            'class' => 'low', 
+        if ($alis->quality_correlation) {
+                $quality[] = (object)array('field' => 'correlation',
+                                            'message' => 'lowcorrelation',
+                                            'class' => 'low',
                                             'display' => 'C');
         }
 
@@ -185,53 +209,42 @@ if($alis_data = $DB->get_records_sql($select.$from.$order)) {
                 $quality[] = $quality_deviation;
                 break;
         }
-        
+
         $quality_html = array();
         if (!empty($quality)) {
             foreach($quality as $status) {
                 $field = $status->field;
                 $class = 'tg_'.$status->class.'quality';
-                $title = get_string($status->message, 'report_targetgrades', $alis->$field);
+                $title = get_string($status->message, 'tool_targetgrades', $alis->$field);
                 $quality_html[] = html_writer::tag('abbr', $status->display, array('class' => $class, 'title' => $title));
             }
         } else {
             $src = $OUTPUT->pix_url('i/tick_green_big');
-            $title = get_string('okquality', 'report_targetgrades');
+            $title = get_string('okquality', 'tool_targetgrades');
             $quality_html[] = html_writer::empty_tag('img', array('src' => $src, 'title' => $title));
         }
 
 ### @export 'table_row'
-        $row = new html_table_row;
-        $row->cells[] = $alis->qualification;
-        $row->cells[] = html_writer::tag('a', $alis->subject, array('name' => 'alis'.$alis->id));
+        $row = array();
+        $row[] = $alis->qualification;
+        $row[] = html_writer::tag('a', $alis->subject, array('name' => 'alis'.$alis->id));
 
-        $row->cells[] = $form;
-        $row->cells[] = $alis->gradient;
-        $row->cells[] = $alis->intercept;
-        $row->cells[] = implode('', $quality_html);
-        $table->data[] = $row;
+        $row[] = $form;
+        $row[] = $alis->gradient;
+        $row[] = $alis->intercept;
+        $row[] = implode('', $quality_html);
+        $table->add_data($row);
+        unset($row);
     }
-}
-$PAGE->requires->js_init_call('M.report_targetgrades.init_datalist');
 
-### @export 'output'
-echo $OUTPUT->header();
-tg\print_tabs(1);
+    $alis_data->close();
 
-echo html_writer::tag('h2', get_string('alisdata', 'report_targetgrades'));
-echo html_writer::tag('p', get_string('configalis', 'report_targetgrades'));
-if(isset($output)) {
-    echo $output;
-}
-$uploadform->display();
-if(isset($table)) {
-    echo html_writer::tag('p', get_string('explainpatterns', 'report_targetgrades', $config));
-    echo html_writer::start_tag('form', array('action' => $PAGE->url->out(), 'method' => 'post'));
-    echo html_writer::table($table);
+    $table->finish_output();
     $attrs = array('type' => 'submit', 'name' => 'savepatterns', 'value' => get_string('savechanges'));
     echo html_writer::empty_tag('input', $attrs);
     echo html_writer::end_tag('form');
 }
+
 echo $OUTPUT->footer();
 ### @end
 ?>
