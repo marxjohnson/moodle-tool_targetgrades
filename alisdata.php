@@ -90,13 +90,14 @@ if ($uploaddata) {
 
 }
 
-### @export 'table'
+### @export 'query'
 $select = 'SELECT a.*, a.name AS subject, q.name AS qualification ';
 $from = 'FROM {tool_targetgrades_alisdata} a
     JOIN {tool_targetgrades_qualtype} q ON a.qualtypeid = q.id ';
 $order = 'ORDER BY q.name, a.name ASC';
 $alis_data = $DB->get_recordset_sql($select.$from.$order);
 
+### @export 'table_patterns'
 try {
     $options = tg\build_pattern_options();
 } catch (unsafe_regex_exception $e) {
@@ -114,6 +115,7 @@ if (isset($output)) {
 }
 $uploadform->display();
 
+### @export 'table'
 if ($alis_data->valid()) {
 
     $table = new flexible_table('alisdata');
@@ -129,7 +131,6 @@ if ($alis_data->valid()) {
     $table->define_baseurl($PAGE->url);
     $table->setup();
 
-### @export 'table_patterns'
 
     $PAGE->requires->js_init_call('M.tool_targetgrades.init_datalist');
 
@@ -237,6 +238,8 @@ if ($alis_data->valid()) {
         unset($row);
     }
 
+
+### @export 'table_end'
     $alis_data->close();
 
     $table->finish_output();
