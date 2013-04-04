@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <link href="pyg.css" type="text/css" rel="stylesheet" />
+        <title>Target Grades - Architecture</title>
+    </head>
+    <body>
+# Target Grades        
+## Architecture 
+ {{ d['filetree.sh|pyg']}}
+ <pre class="highlight">{{ d['filetree.sh|bash']}}</pre>
+        
+###/
+This folder lives at $CFG->dirroot/admin/report/targetgrades, and contains the majority of the plugin files
+####alisdata_form.php
+Defines the form used to upload the CSV files contianing the ALIS statistics
+####alisdata.php
+Displays the form defined in alisdata_form.php. Once statistics have been uploaded, lists the statistics along with flags relating to data quality issues, and allows them to be linked to courses.
+####lib.php    
+This is the plugin's main library. The majority of functions, classes and constants used by this plugin live in here.  Stuff in this file lives under the \report\targetgrades [namespace](http://uk.php.net/manual/en/language.namespaces.php).
+####settingsform.php
+Defines, displays and processes the settings form.  Most plugin types automatically pick up on fields defined in settings.php and create a form, but report plugins don't seem to do this.  Because this is a bit of a hack, the form is defined and displayed in the same page, rather than the class taking up space in lib.php
+####settings.php
+Very simply defines the admin module for this plugin, and adds it to the Settings block under the Grades menu.
+####version.php
+Just defines the plugin version number.
+
+###/cli/
+Contains bash scripts used to convert PDFs from ALIS to CSV files that can be uploaded to alisdata.php
+####alis2009_pdf2csv.sh
+Legacy script for converting ALIS statistics from 2009 from PDF to CSV.
+####alis2011_pdf2csv.sh
+Legacy script for converting ALIS statistics from 2010 from PDF to CSV.
+####alis_pdf2csv.sh
+Converts the current PDF from ALIS to a CSV file containing the statistics required to calculate target grades.  Uses pdf2text to extract the tables to text, then uses sed to clean the file and turn it into a nicely delimited flatfile.
+
+###/db/
+Contains Moodle standard database files
+####access.php
+Defines the report/targetgrades:view and report/targetgrades:distribute capabilities
+####install.xml
+Defines the [database schema](database.html)
+
+###/lang/
+Contains Moodle standard language files. Currently only contains English tranlastion.
+        
+</body>
+</html>

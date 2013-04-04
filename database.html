@@ -1,0 +1,48 @@
+<p><html>
+    <head>
+        <link href="pyg.css" type="text/css" rel="stylesheet" />
+        <title>Target Grades - Database</title>
+    </head>
+    <body></p>
+<h1>Target Grades</h1>
+<h2>Database</h2>
+<h3>mdl_report_targetgrades_alisdata</h3>
+<p><div class="highlight"><pre><a name="l-1"></a>+---------------------+-----------------------+------+-----+---------+----------------+
+<a name="l-2"></a>| Field               | Type                  | Null | Key | Default | Extra          |
+<a name="l-3"></a>+---------------------+-----------------------+------+-----+---------+----------------+
+<a name="l-4"></a>| id                  | bigint(10) unsigned   | NO   | PRI | NULL    | auto_increment |
+<a name="l-5"></a>| name                | text                  | YES  |     | NULL    |                |
+<a name="l-6"></a>| qualtypeid          | bigint(10) unsigned   | NO   |     | NULL    |                |
+<a name="l-7"></a>| samplesize          | mediumint(6) unsigned | NO   |     | NULL    |                |
+<a name="l-8"></a>| gradient            | decimal(6,2)          | YES  |     | NULL    |                |
+<a name="l-9"></a>| intercept           | decimal(6,2)          | YES  |     | NULL    |                |
+<a name="l-10"></a>| correlation         | decimal(3,2)          | YES  |     | NULL    |                |
+<a name="l-11"></a>| standarddeviation   | decimal(6,2) unsigned | NO   |     | NULL    |                |
+<a name="l-12"></a>| quality_samplesize  | tinyint(1) unsigned   | NO   |     | 0       |                |
+<a name="l-13"></a>| quality_correlation | tinyint(1) unsigned   | NO   |     | 0       |                |
+<a name="l-14"></a>| quality_deviation   | tinyint(1) unsigned   | NO   |     | 0       |                |
+<a name="l-15"></a>+---------------------+-----------------------+------+-----+---------+----------------+
+</pre></div></p>
+<p>This table contains the data extracted from the uploaded CSV file.  The name and raw statistics are stored in the <code>name</code>, <code>samplesize</code>, <code>gradient</code>, <code>intercept</code>, <code>correlation</code>, <code>standarddeviation</code> fields.  The <code>quality_*</code> fields are used to store flags indicating that there may be issues with the quality of the statistics. <code>qualtypeid</code> is a foreign key linking to the <code>qualtype</code> table, to associate these statistics with the appropriate grade scale and grade boundaries. </p>
+<h3>mdl_report_targetgrades_qualtypes</h3>
+<p><div class="highlight"><pre><a name="l-1"></a>+------------+---------------------+------+-----+---------+----------------+
+<a name="l-2"></a>| Field      | Type                | Null | Key | Default | Extra          |
+<a name="l-3"></a>+------------+---------------------+------+-----+---------+----------------+
+<a name="l-4"></a>| id         | bigint(10) unsigned | NO   | PRI | NULL    | auto_increment |
+<a name="l-5"></a>| alisdataid | bigint(10) unsigned | YES  |     | NULL    |                |
+<a name="l-6"></a>| pattern    | text                | YES  |     | NULL    |                |
+<a name="l-7"></a>+------------+---------------------+------+-----+---------+----------------+
+</pre></div></p>
+<p>This table contains the various types of qualification tracked by ALIS's statistics.  The table is built when the report is installed, using the constants in lib.php.  <code>name</code> stores the name of the qualification as used by ALIS, and <code>scaleid</code> links to the record in the <code>scale</code> table for this qualification that was created on install.</p>
+<h3>mdl_report_targetgrades_patterns</h3>
+<p><div class="highlight"><pre><a name="l-1"></a>+------------+---------------------+------+-----+---------+----------------+
+<a name="l-2"></a>| Field      | Type                | Null | Key | Default | Extra          |
+<a name="l-3"></a>+------------+---------------------+------+-----+---------+----------------+
+<a name="l-4"></a>| id         | bigint(10) unsigned | NO   | PRI | NULL    | auto_increment |
+<a name="l-5"></a>| alisdataid | bigint(10) unsigned | YES  |     | NULL    |                |
+<a name="l-6"></a>| pattern    | text                | YES  |     | NULL    |                |
+<a name="l-7"></a>+------------+---------------------+------+-----+---------+----------------+
+</pre></div></p>
+<p>This table stores the association between a set of courses (grouped by the group_field set in the report's config) and a set of alis statistics.  <code>alisdataid</code> links to the set of stats in the <code>alisdata</code> table, and <code>pattern</code> holds the pattern that is matched against the group_field.
+    </body>
+</html></p>

@@ -1,0 +1,10 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="pyg.css" />
+        <title>Target Grades</title>
+    </head>
+    <body>
+{% for file, text in d['index-links']['index.html'].items() %}
+* [{{ text }}]({{ file }}) {% endfor %}
+    </body>   
+</html>

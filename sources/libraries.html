@@ -1,0 +1,266 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="pyg.css" />
+        <title>Target Grades - Libraries</title>
+    </head>
+    <body>
+# Target Grades
+## Libraries
+{% for anchor, text in d['index-links']['libraries.html'].items() %} 
+* [{{ text }}](#{{ anchor }}) {% endfor %}
+
+The Target Grades report contains 2 libraries - `lib.php` and `alisdata_form.php`. These define all the constants, functions and classes used in the system.
+
+These libraries define everything within the report\targetgrades namespace:
+
+{{ d['lib.php|idio']['namespace'] }}
+
+This allows the definitions to be given reasonable concise names without the risk of name collisions with other parts of Moodle.  All files that include these libaraies alias the namespace to `tg` using the following line:
+
+{{ d['index.php|idio']['alias'] }}
+
+Functions from the library can then be called using the following syntax:
+
+{{ d['index.php|idio']['get_config'] }}
+
+
+### <a name="constants">Constants</a>
+#### Qualifications
+
+{{ d['lib.php|idio']['alisconstants'] }}
+
+These constants define the names of the Qualifications tracked by ALIS, as they appear in the ALIS equations PDF.  They are used to set the names in the qualtypes table, and to determine the qualification type of a particular course.
+#### Scales
+
+{{ d['lib.php|idio']['scaleconstants'] }}
+
+These constants are used to define the scales used for each of the qualifications tracked by ALIS.  These scales are entered into the scales table when the report is installed, and used to set the scale for the target grade items.
+#### Correlation
+
+{{ d['lib.php|idio']['correlationthreshold'] }}
+
+This is the threshold used by quality checks to determine whether the correlation of a set of statistics is reliable enough to be used for calculations.  Below this number, the statistics will be flagged as having low correlation.  According the the ALIS equations PDF, a correlation of 0.6-0.7 is considered to be strong.
+
+#### Grade Items
+
+{{ d['lib.php|idio']['itemprefix'] }}
+
+This string is used to prefix the idnumber of each grade item generated during distribution.  It's then used by [sort_gradebook()](#sort_gradebook) to find the items for sorting.
+
+### <a name="functions">Functions</a>
+{% for anchor, text in d['anchor-links']['libraries.html']['functions'].items() %} 
+* [{{ text }}](#{{ anchor }}) {% endfor %}
+
+#### <a name="get_scale">get_scale()</a>
+
+{{ d['lib.php|idio']['get_scale'] }}
+
+`get_scale()` basically just takes one of the ALIS qualification constants and return the constant for the scale the that qualification uses.  The name of the scale constant doesn't necessarily match the name of the qualification, since some qualifications use identical scales so the scale is only defined once.
+
+#### <a name="get_config">get_config()</a>
+
+{{ d['lib.php|idio']['get_config'] }}        
+
+`get_config()` uses Moodle's own `get_config()` function (note the \ denoting that it's in the global namespace) to get the configuration settings for the plugin.  It then uses `unserialize()` to get the roles and categories settings as arrays.
+
+By default, the config will only be loaded once per page, so if several functions call `get_config()` only the first one will require any database queries - subsequent calls will just return the inital result.  This can be overridden by setting the `$force` paramter to `true`, for example if the config is changed within the page and an up-to-date copy is required.
+
+#### <a name="hasconfig">hasconfig()</a>
+
+{{ d['lib.php|idio']['hasconfig'] }}
+
+`hasconfig()` takes an array of courses, and determines whether each one has been configured to use a set of ALIS statistics for calculations.  If there aren't any, it sets the `firstname` field of the item to an asterisk so this fact can be indicated on screen.  For an explanation of the weird field name used here, see the `[potential_course_selector](#pcs)`.
+
+#### <a name="calulate_mtg">calulate_mtg()</a>
+
+{{ d['lib.php|idio']['calculate_mtg'] }}
+
+This is the function that does "the business" of the plugin.  It takes a student and a course, and calulates a minimum target grade based on the ALIS statistics for that course (if it has been configured to use any).  The inital query gets the statistics that we're using.  Each qualification has to have a slightly different calulation due to the differing scales and grade bounaries, as well as whether the ALIS statistics are based on UCAS tarriff points or just a number on a scale, so we use a switch to determine which to use.  The calulated grade is always rounded up to the next grade boundary (e.g. anything that is calulated between C and B will be rounded up to a B).  The function returns an array containing the raw number produced by the ALIS calulation, and the grade.
+
+#### <a name="build_pattern_options">build_pattern_options()</a>
+
+{{ d['lib.php|idio']['build_pattern_options'] }}
+
+This creates a list of options for matching patterns to a set of statistics, for use on alisdata.php.  Using the `group_field` and `group_length` settings, it creates a set of patterns from all the courses in the categories defined by the `categories` setting, excluding those matched by the `exclude_regex`.  It then returns the patterns as an array of options to be used for creating a select box.
+
+#### <a name="sort_gradebook">sort_gradebook()</a>
+
+{{ d['lib.php|idio']['sort_gradebook'] }}
+
+`sort_gradebook()` re-sorts the gradebook for the specified course after the grade items have been added, to place all of the grade items created by this plugin at the far left (and ideally in the correct order).  The complicated bits are achieved using the gradebook APIs included from `/grade/lib.php` and `/grade/edit/tree/lib.php`.
+
+#### <a name="print_tabs">print_tabs()</a>
+
+{{ d['lib.php|idio']['print_tabs'] }}
+
+Uses Moodle's output APIs to display a heading and 3 tabs for navigating the plugin, one for the ALIS Data page, one for the Distribution/Calculation page, and one for the settings form.  The number passed to the `$selected` will determine which tab is selected by default.
+
+### <a name="classes">Classes</a>
+{% for anchor, text in d['anchor-links']['libraries.html']['classes'].items() %} 
+* [{{ text }}](#{{ anchor }}) {% endfor %}
+
+#### <a name="item_grade">item_grade</a> et al
+
+{{ d['lib.php|idio']['item_grade'] }}
+
+This is a base class extended by several others to create templates for the various grade items used in the plugin.  The names, types and scales are set automatically. The object created by these classes can be passed to `grade_item::set_properties()` to define or update the grade item.
+#### <a name="csvhandler">csvhandler</a>
+
+{{ d['lib.php|idio']['csvhandler'] }}
+
+{{ d['lib.php|idio']['csvhandler_construct'] }}
+
+`csvhandler` is used to validate and process a CSV file uploaded to `alisdata.php`.  To construct the object, you simple pass it the filename.
+
+{{ d['lib.php|idio']['csvhandler_openfile'] }}
+
+The `open_file()` method uses Moodle's File API to find the file with the given file name, open it, and return a file handle used to access the file's contents.
+
+{{ d['lib.php|idio']['csvhandler_validate'] }}
+
+The `validate()` method makes sure that the CSV file is in the correct format. Files produced using the provided script should have either 1 or 6 fields on every row.  If the uploaded file doesn't look like this, an exception is thrown.
+
+{{ d['lib.php|idio']['csvhandler_process'] }}
+
+The `process()` method parses all the data in the file and inserts it into the database, then performs some quality checks on the data.  It starts by looping over each line, splitting the fields up into an array called `$line`.
+
+{{ d['lib.php|idio']['csvhandler_process_heading'] }}
+
+Lines only containing a single field will be a heading for a qualification.  If that's the case the value is cleaned, then the record for the qualification is created or updated, and matched with the grade scale.
+
+{{ d['lib.php|idio']['csvhandler_process_qualtype'] }}
+
+Lines containing 6 fields will be a qualification with a set of statistics.  In this case we clean the values in each field and either insert or update a record for the qualification.
+When we've done all the lines, we close the file.
+
+{{ d['lib.php|idio']['csvhandler_process_quality'] }}
+
+Once the file's been processed and the records are in the database, we do some quality checks to flag up any potential issues with the sample size, correlation, or standard deviation of the data.  This starts by getting all the records in the `alisdata` table, along with the average sample size for comparison.
+
+{{ d['lib.php|idio']['csvhandler_process_samplesize'] }}
+
+Using the average size as a benchmark, the we check if the sample size for the current record is below average, below half of the average, or below a quarter of the average, and add a flag to the record accordingly.
+
+{{ d['lib.php|idio']['csvhandler_process_correlation'] }}
+
+Next we take a look at the correlation. If it's below the defined [correlation](#constants) threshold we add a flag to the record.
+
+{{ d['lib.php|idio']['csvhandler_process_deviation'] }}
+
+Finally we take a look at the standard deviation.  This is likely to cause problems if it's greater than 1 grade boundary, so we need to work out which grade bounary we're working with by looking at the qualification type.  We then see if the deviation is greater than 1 or 2 boundaries, and add a flag accordingly.
+
+{{ d['lib.php|idio']['csvhandler_process_end'] }}
+
+Once we've done all the quality checks we update the records in the database, and we're done.
+
+#### <a name="pcs">potential_course_selector</a>
+
+{{ d['lib.php|idio']['pcs'] }}
+The Potential Course Selector displays the right hand side of the Big Select List in `distribute.php`.  It's an extension of `user_selector` from `/user/selector/lib.php` and won't be defined unless this file has already been included.  This is also true of the [distributed_course_selector](#dcs).
+
+{{ d['lib.php|idio']['pcs_get_options'] }}
+
+The `get_options()` method simply overrides the parent method to add the path of the lib.php file, allowing it to be included when using AJAX to search the list.
+
+{{ d['lib.php|idio']['pcs_find_users'] }}
+
+`find_users()` gets the list of users to display.  As this class is an extension of `user_selector`, it uses funny names for the fields (and the method) to save having to override all the other methods, so the course's shortname is called surname, and the fullname is called email, while firstname is used to hold an indicator from `<a href='#hasconfig'>hasconfig</a>` if required.
+
+{{ d['lib.php|idio']['pcs_find_users_categories'] }}
+
+We start by converting the configured course categories to an IN statement.
+
+{{ d['lib.php|idio']['pcs_find_users_group'] }}
+
+Next we get all the fields.  If a `group_field` and `group_length` are set, then it will also get a pattern based in these settings.  Otherwise, it will just use the whole shortname.
+
+{{ d['lib.php|idio']['pcs_find_users_regex'] }}
+
+If an `exclude_field` and `exclude_regex` are defined, the courses that match it are filtered out.
+
+{{ d['lib.php|idio']['pcs_find_users_search'] }}
+
+If any search text was provided using the `$search` parameter, then results are filtered to those where `$search` appears in `shortname` or `fullname`.
+
+{{ d['lib.php|idio']['pcs_find_users_exclude'] }}
+
+If the object has any IDs set for exlusion, they are also filtered out.  This is used to ensure that no courses in the `[distributed_course_selector](#dcs)` appear in the list.
+
+{{ d['lib.php|idio']['pcs_find_users_end'] }}
+
+And we're done. Run the query, and return the results in a 2D array with the optgroup heading as the index. 
+
+#### <a name="dcs">distributed_course_selector</a>
+
+{{ d['lib.php|idio']['dcs'] }}
+
+The Distributed Course Selector displays the left hand side of the Big Select List in `distubute.php`.  It extends `potential_course_selector` to save duplication of the `get_options()` method, and displays those courses which already contain the Target Grade items.
+
+{{ d['lib.php|idio']['dcs_find_users'] }}
+
+`find_users()` starts by getting the plugin's config.  It's worth noting that while the method accepts an arugment, this argument it not used - it's only there to satisfy the requirements of overriding the abstract ancestor method.
+
+{{ d['lib.php|idio']['dcs_find_users_fields'] }}
+
+As with `potential_course_selector`, we use field names as though the course records were use records.
+
+{{ d['lib.php|idio']['dcs_find_users_group'] }}
+
+If a `group_field` and `group_length` are set, we use them to create a pattern, otherwise we just use the shortname.
+
+{{ d['lib.php|idio']['dcs_find_users_items'] }}
+
+Here we define the items that we're looking for.  Using item names probably isn't the tidiest way to do it, but it's good enough for now.
+
+{{ d['lib.php|idio']['dcs_find_users_end'] }}
+
+Finally we use `hasconfig()` to put asterisks on those with no stats linked to their pattern, and return the array.
+
+### <a name="exceptions">Exceptions</a>
+{% for anchor, text in d['anchor-links']['libraries.html']['exceptions'].items() %} 
+* [{{ text }}](#{{ anchor }}) {% endfor %}
+
+#### <a name="e_nostudents">no_students_exception</a>       
+ 
+{{ d['lib.php|idio']['e_nostudents']}}
+
+This exception is thrown in `distribute.php` to indicate that there are no students in a class, and therefore the process doesn't need to continue.
+
+#### <a name="e_nodataforstudent">no_data_for_student_exception</a>
+
+{{ d['lib.php|idio']['e_nodataforstudent']}}
+
+This exception is thrown in `distribute.php` when a student has no Average GCSE score, and therefore no grade can be calculated.
+
+#### <a name="e_nomtgforstudent">no_mtg_for_student_exception</a>
+
+{{ d['lib.php|idio']['e_nomtgforstudent']}}
+
+This exception is thrown by `calulate_mtg()` to indicate that no Target Grade could be calculated     
+   
+#### <a name="e_gradeitemexists">grade_item_exists_exception</a>
+
+{{ d['lib.php|idio']['e_gradeitemexists']}}
+
+This exception is thrown in `distribute.php` when a grade item already exists on a page.  It captures the ID of the item's record, which is used instead of the insert ID from the new record, which would be used if a new item was created.
+
+#### <a name="e_unsaferegex">unsafe_regex_exception</a>
+
+{{ d['lib.php|idio']['e_unsaferegex']}}
+
+As the `exclude_regex` config settings allows the admin user to define a regex which is executed on the server, there are checks throughout the system to ensure that the pattern entered doesn't represent a risk of [ReDOS](http://en.wikipedia.org/wiki/ReDoS) (AKA "Catastrophic Backtracking").  This exception is thrown if such a risk is detected, to prevent the pattern being executed.
+
+#### <a name="e_needsconfig">needsconfig_exception</a>
+
+{{ d['lib.php|idio']['e_needsconfig']}}
+
+This exception is thrown by the plugin's pages if the plugin hasn't been configured correctly.
+
+### <a name="forms">Forms</a>
+#### <a name="alisdata_form">alisdata_upload_form</a>
+
+{{ d['alisdata_form.php|idio']['alisdata_form'] }}
+
+This form is displayed and processed by `alisdata_form.php`. It just displays a filepicker element with some explanation of the correct file format, allowing a CSV file of ALIS statistics to be uploaded.  Note that this class is not in the report\targetgrades namespace as doing so cases problems with the <tt>moodleform</tt> class's Cross-site request forgery protection.
+</body>
+</html>

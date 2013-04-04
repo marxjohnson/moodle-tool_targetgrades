@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <link href="pyg.css" type="text/css" rel="stylesheet" />
+        <title>Target Grades - Database</title>
+    </head>
+    <body>
+# Target Grades
+## Database
+
+### mdl_report_targetgrades_alisdata
+ {{ d['database.sh|bash|idio']['alisdata']}}
+This table contains the data extracted from the uploaded CSV file.  The name and raw statistics are stored in the `name`, `samplesize`, `gradient`, `intercept`, `correlation`, `standarddeviation` fields.  The `quality_*` fields are used to store flags indicating that there may be issues with the quality of the statistics. `qualtypeid` is a foreign key linking to the `qualtype` table, to associate these statistics with the appropriate grade scale and grade boundaries. 
+        
+### mdl_report_targetgrades_qualtypes
+ {{ d['database.sh|bash|idio']['qualtypes']}}
+This table contains the various types of qualification tracked by ALIS's statistics.  The table is built when the report is installed, using the constants in lib.php.  `name` stores the name of the qualification as used by ALIS, and `scaleid` links to the record in the `scale` table for this qualification that was created on install.
+        
+### mdl_report_targetgrades_patterns
+ {{ d['database.sh|bash|idio']['qualtypes']}}
+This table stores the association between a set of courses (grouped by the group_field set in the report's config) and a set of alis statistics.  `alisdataid` links to the set of stats in the `alisdata` table, and `pattern` holds the pattern that is matched against the group_field.
+    </body>
+</html>
